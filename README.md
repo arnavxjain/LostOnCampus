@@ -132,3 +132,4 @@ cd supabase/tests && npm install && npm test
 - Pickup codes live in `handover_codes`, readable only by the item's owner and admins. Notifications never contain the code.
 - Active codes are unique, so a code always identifies exactly one item.
 - Photos are publicly readable by URL; users can only upload or delete inside their own folder.
+# LostOnCampus
