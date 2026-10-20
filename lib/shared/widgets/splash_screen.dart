@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/auth/providers/auth_providers.dart';
+import 'wordmark.dart';
 
 /// Shown while the signed-in user's role is being resolved.
 class SplashScreen extends ConsumerWidget {
@@ -20,7 +22,7 @@ class SplashScreen extends ConsumerWidget {
               ? Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.cloud_off, size: 48),
+                    Icon(CupertinoIcons.wifi_slash, size: 48, color: Theme.of(context).colorScheme.primary),
                     const SizedBox(height: 16),
                     const Text("Couldn't load your account.", textAlign: TextAlign.center),
                     if (kDebugMode) ...[
@@ -28,17 +30,22 @@ class SplashScreen extends ConsumerWidget {
                       Text('${role.error}', textAlign: TextAlign.center),
                     ],
                     const SizedBox(height: 16),
-                    FilledButton(
+                    FilledButton.icon(
                       onPressed: () => ref.invalidate(userRoleProvider),
-                      child: const Text('Retry'),
+                      icon: const Icon(CupertinoIcons.arrow_clockwise, size: 18),
+                      label: const Text('Retry'),
                     ),
-                    TextButton(
+                    TextButton.icon(
                       onPressed: () => ref.read(authRepositoryProvider).signOut(),
-                      child: const Text('Sign out'),
+                      icon: const Icon(CupertinoIcons.square_arrow_right, size: 18),
+                      label: const Text('Sign out'),
                     ),
                   ],
                 )
-              : const CircularProgressIndicator(),
+              : const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [Wordmark(), SizedBox(height: 28), CircularProgressIndicator()],
+                ),
         ),
       ),
     );

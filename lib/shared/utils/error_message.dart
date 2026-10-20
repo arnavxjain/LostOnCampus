@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Maps data/storage errors to short messages suitable for a snackbar.
 String friendlyError(Object error) {
-  if (error is SocketException || error is AuthRetryableFetchException) {
+  // ClientException: the HTTP request itself failed (e.g. connection dropped).
+  if (error is SocketException || error is ClientException || error is AuthRetryableFetchException) {
     return 'Network error. Check your connection and try again.';
   }
   if (error is StorageException) {

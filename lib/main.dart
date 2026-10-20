@@ -4,12 +4,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
 import 'core/config/env.dart';
+import 'shared/widgets/app_nav_bar.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
     await Env.load();
+    await AppNavBar.checkGlassSupport();
     await Supabase.initialize(url: Env.supabaseUrl, publishableKey: Env.supabasePublishableKey);
   } catch (e) {
     runApp(_StartupErrorApp(error: e));

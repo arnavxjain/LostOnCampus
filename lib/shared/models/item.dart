@@ -1,16 +1,17 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 
 /// Mirrors the `item_category` enum in the database.
 enum ItemCategory {
-  electronics('Electronics', Icons.devices),
-  idCard('ID card', Icons.badge),
-  keys('Keys', Icons.key),
-  wallet('Wallet', Icons.account_balance_wallet),
-  bag('Bag', Icons.backpack),
-  clothing('Clothing', Icons.checkroom),
-  books('Books', Icons.menu_book),
-  bottle('Bottle', Icons.water_drop),
-  other('Other', Icons.category);
+  electronics('Electronics', CupertinoIcons.device_laptop),
+  idCard('ID card', CupertinoIcons.person_crop_rectangle),
+  keys('Keys', CupertinoIcons.lock),
+  wallet('Wallet', CupertinoIcons.creditcard),
+  bag('Bag', CupertinoIcons.briefcase),
+  clothing('Clothing', CupertinoIcons.bag),
+  books('Books', CupertinoIcons.book),
+  bottle('Bottle', CupertinoIcons.drop),
+  other('Other', CupertinoIcons.ellipsis_circle);
 
   const ItemCategory(this.label, this.icon);
 

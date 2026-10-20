@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -6,13 +6,16 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/verify_email_screen.dart';
 import '../../features/auth/providers/auth_providers.dart';
-import '../../features/guard/presentation/admin_home_screen.dart';
+import '../../features/guard/presentation/admin_shell.dart';
+import '../../features/guard/presentation/desk_screen.dart';
+import '../../features/guard/presentation/verify_screen.dart';
 import '../../features/items/presentation/feed_screen.dart';
 import '../../features/items/presentation/item_detail_screen.dart';
 import '../../features/items/presentation/my_posts_screen.dart';
 import '../../features/items/presentation/post_item_screen.dart';
 import '../../features/items/presentation/student_home_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
+import '../../features/profile/presentation/profile_screen.dart';
 import '../../shared/models/user_role.dart';
 import '../../shared/widgets/splash_screen.dart';
 import 'routes.dart';
@@ -81,12 +84,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+      GoRoute(path: Routes.profile, builder: (_, _) => const ProfileScreen()),
       GoRoute(path: Routes.postItem, builder: (_, _) => const PostItemScreen()),
       GoRoute(
         path: Routes.itemDetailPattern,
         builder: (_, state) => ItemDetailScreen(itemId: state.pathParameters['id']!),
       ),
-      GoRoute(path: Routes.admin, builder: (_, _) => const AdminHomeScreen()),
+      StatefulShellRoute.indexedStack(
+        builder: (_, _, shell) => AdminShell(shell: shell),
+        branches: [
+          StatefulShellBranch(routes: [GoRoute(path: Routes.admin, builder: (_, _) => const DeskScreen())]),
+          StatefulShellBranch(routes: [GoRoute(path: Routes.adminVerify, builder: (_, _) => const VerifyScreen())]),
+          StatefulShellBranch(
+            routes: [GoRoute(path: Routes.adminProfile, builder: (_, _) => const ProfileScreen(showPosts: false))],
+          ),
+        ],
+      ),
     ],
   );
 

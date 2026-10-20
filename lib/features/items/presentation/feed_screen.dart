@@ -1,16 +1,20 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/routes.dart';
 import '../../../shared/models/item.dart';
+import '../../../shared/widgets/app_header.dart';
 import '../../../shared/widgets/async_view.dart';
-import '../../../shared/widgets/sign_out_button.dart';
+import '../../../shared/widgets/filter_chips.dart';
+import '../../../shared/widgets/search_field.dart';
 import '../providers/items_providers.dart';
-import 'widgets/item_card.dart';
+import 'widgets/item_grid.dart';
 
+/// Student home: search, category chips and a grid of lost items.
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
 
@@ -21,6 +25,11 @@ class FeedScreen extends ConsumerStatefulWidget {
 class _FeedScreenState extends ConsumerState<FeedScreen> {
   late final TextEditingController _search;
   Timer? _debounce;
+
+  static final _categoryOptions = [
+    const FilterOption<ItemCategory?>(null, 'All', icon: CupertinoIcons.square_grid_2x2),
+    for (final c in ItemCategory.values) FilterOption<ItemCategory?>(c, c.label, icon: c.icon),
+  ];
 
   @override
   void initState() {
@@ -57,44 +66,22 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     final isFiltered = filter.query.trim().isNotEmpty || filter.category != null;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Lost items'), actions: const [SignOutButton()]),
+      appBar: const AppHeader(),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: TextField(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+            child: SearchField(
               controller: _search,
-              textInputAction: TextInputAction.search,
+              hintText: 'Search lost items',
               onChanged: _onSearchChanged,
-              decoration: InputDecoration(
-                hintText: 'Search lost items',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _search.text.isEmpty
-                    ? null
-                    : IconButton(tooltip: 'Clear', icon: const Icon(Icons.close), onPressed: _clearSearch),
-              ),
+              onClear: _clearSearch,
             ),
           ),
-          SizedBox(
-            height: 48,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              children: [
-                _CategoryChip(
-                  label: 'All',
-                  selected: filter.category == null,
-                  onSelected: () => ref.read(feedFilterProvider.notifier).setCategory(null),
-                ),
-                for (final c in ItemCategory.values)
-                  _CategoryChip(
-                    label: c.label,
-                    icon: c.icon,
-                    selected: filter.category == c,
-                    onSelected: () => ref.read(feedFilterProvider.notifier).setCategory(c),
-                  ),
-              ],
-            ),
+          FilterChips<ItemCategory?>(
+            options: _categoryOptions,
+            selected: filter.category,
+            onSelected: (c) => ref.read(feedFilterProvider.notifier).setCategory(c),
           ),
           Expanded(
             child: RefreshIndicator(
@@ -106,48 +93,21 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                     ? ListView(
                         // Scrollable so pull-to-refresh still works when empty.
                         children: [
-                          const SizedBox(height: 80),
+                          const SizedBox(height: 64),
                           MessageView(
-                            icon: isFiltered ? Icons.search_off : Icons.celebration_outlined,
+                            icon: isFiltered ? CupertinoIcons.search : CupertinoIcons.sparkles,
                             title: isFiltered ? 'No matching items' : 'Nothing lost right now',
-                            subtitle: isFiltered ? 'Try a different search or category.' : 'Lost something? Post it below.',
+                            subtitle: isFiltered
+                                ? 'Try a different search or category.'
+                                : 'Lost something? Tap + to post it.',
                           ),
                         ],
                       )
-                    : ListView.builder(
-                        padding: const EdgeInsets.only(bottom: 96),
-                        itemCount: list.length,
-                        itemBuilder: (context, i) => ItemCard(
-                          item: list[i],
-                          onTap: () => context.push(Routes.itemDetail(list[i].id)),
-                        ),
-                      ),
+                    : ItemGrid(items: list, onTap: (item) => context.push(Routes.itemDetail(item.id))),
               ),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CategoryChip extends StatelessWidget {
-  const _CategoryChip({required this.label, required this.selected, required this.onSelected, this.icon});
-
-  final String label;
-  final IconData? icon;
-  final bool selected;
-  final VoidCallback onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: ChoiceChip(
-        label: Text(label),
-        avatar: icon == null || selected ? null : Icon(icon, size: 18),
-        selected: selected,
-        onSelected: (_) => onSelected(),
       ),
     );
   }

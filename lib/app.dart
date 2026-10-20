@@ -14,8 +14,9 @@ class LostOnCampusApp extends ConsumerWidget {
       title: 'Lost on Campus',
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: rootScaffoldMessengerKey,
+      // The palette is light-only by design.
       theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.light,
       routerConfig: ref.watch(routerProvider),
     );
   }

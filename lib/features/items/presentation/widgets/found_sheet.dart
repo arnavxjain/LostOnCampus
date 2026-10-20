@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -96,7 +97,12 @@ class _FoundSheetState extends ConsumerState<_FoundSheet> {
                 },
               ),
               const SizedBox(height: 16),
-              LoadingButton(label: 'I handed it to security', loading: _saving, onPressed: _submit),
+              LoadingButton(
+                label: 'I handed it to security',
+                icon: CupertinoIcons.checkmark_shield_fill,
+                loading: _saving,
+                onPressed: _submit,
+              ),
             ],
           ),
         ),

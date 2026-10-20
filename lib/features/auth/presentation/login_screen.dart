@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +8,7 @@ import '../../../core/router/routes.dart';
 import '../../../shared/utils/snackbar.dart';
 import '../../../shared/utils/validators.dart';
 import '../../../shared/widgets/loading_button.dart';
+import '../../../shared/widgets/wordmark.dart';
 import '../data/auth_repository.dart';
 import '../providers/auth_providers.dart';
 import 'verify_email_screen.dart';
@@ -71,11 +73,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: ListView(
               padding: const EdgeInsets.all(24),
               children: [
-                const SizedBox(height: 32),
-                Text('Lost on Campus', style: textTheme.headlineMedium),
-                const SizedBox(height: 8),
-                Text('Sign in to find or return lost items.', style: textTheme.bodyLarge),
-                const SizedBox(height: 32),
+                const SizedBox(height: 56),
+                const Align(alignment: Alignment.centerLeft, child: Wordmark()),
+                const SizedBox(height: 10),
+                Text('Sign in to find or return lost items on campus.', style: textTheme.bodyLarge),
+                const SizedBox(height: 40),
                 TextFormField(
                   controller: _email,
                   keyboardType: TextInputType.emailAddress,
@@ -93,7 +95,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: 'Password',
                     suffixIcon: IconButton(
-                      icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(_obscure ? CupertinoIcons.eye : CupertinoIcons.eye_slash),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
@@ -101,11 +103,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onFieldSubmitted: (_) => _signIn(),
                 ),
                 const SizedBox(height: 24),
-                LoadingButton(label: 'Sign in', loading: _loading, onPressed: _signIn),
+                LoadingButton(label: 'Sign in', icon: CupertinoIcons.arrow_right_circle, loading: _loading, onPressed: _signIn),
                 const SizedBox(height: 12),
-                TextButton(
+                TextButton.icon(
                   onPressed: _loading ? null : () => context.push(Routes.register),
-                  child: const Text("Don't have an account? Register"),
+                  icon: const Icon(CupertinoIcons.person_badge_plus, size: 18),
+                  label: const Text("Don't have an account? Register"),
                 ),
               ],
             ),

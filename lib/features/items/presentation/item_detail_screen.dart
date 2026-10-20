@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,13 +8,16 @@ import '../../../shared/models/user_role.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/snackbar.dart';
 import '../../../shared/utils/time_ago.dart';
+import '../../../shared/widgets/app_header.dart';
 import '../../../shared/widgets/async_view.dart';
+import '../../../shared/widgets/pill.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../providers/items_providers.dart';
 import 'widgets/found_sheet.dart';
 import 'widgets/handover_info.dart';
 import 'widgets/item_image.dart';
 import 'widgets/status_chip.dart';
+import '../../../core/theme/shapes.dart';
 
 class ItemDetailScreen extends ConsumerWidget {
   const ItemDetailScreen({super.key, required this.itemId});
@@ -27,13 +31,14 @@ class ItemDetailScreen extends ConsumerWidget {
     final role = ref.watch(userRoleProvider).value;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Item'),
+      appBar: AppHeader(
+        title: 'Item',
+        showAvatar: false,
         actions: [
           if (item.value case final i? when i.ownerId == userId && i.status == ItemStatus.lost)
             IconButton(
               tooltip: 'Delete post',
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(CupertinoIcons.trash),
               onPressed: () => _confirmDelete(context, ref, i),
             ),
         ],
@@ -43,7 +48,7 @@ class ItemDetailScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(itemDetailProvider(itemId)),
         data: (i) => i == null
             ? const MessageView(
-                icon: Icons.visibility_off_outlined,
+                icon: CupertinoIcons.eye_slash,
                 title: 'This item is no longer available',
                 subtitle: 'It may have been found or removed.',
               )
@@ -59,7 +64,7 @@ class ItemDetailScreen extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
               child: FilledButton.icon(
-                icon: const Icon(Icons.volunteer_activism),
+                icon: const Icon(CupertinoIcons.hand_raised),
                 label: const Text('I Found This'),
                 onPressed: () => _reportFound(context, ref, i),
               ),
@@ -84,8 +89,16 @@ class ItemDetailScreen extends ConsumerWidget {
         title: const Text('Delete this post?'),
         content: Text('"${item.title}" will be removed from the lost items list.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+          TextButton.icon(
+            onPressed: () => Navigator.pop(context, false),
+            icon: const Icon(CupertinoIcons.xmark, size: 18),
+            label: const Text('Cancel'),
+          ),
+          FilledButton.icon(
+            onPressed: () => Navigator.pop(context, true),
+            icon: const Icon(CupertinoIcons.trash, size: 18),
+            label: const Text('Delete'),
+          ),
         ],
       ),
     );
@@ -117,13 +130,19 @@ class _ItemDetails extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: 32),
       children: [
-        AspectRatio(aspectRatio: 4 / 3, child: ItemImage(item: item, iconSize: 64)),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          child: Squircle(
+            radius: 28,
+            child: AspectRatio(aspectRatio: 4 / 3, child: ItemImage(item: item, iconSize: 64)),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(item.title, style: textTheme.headlineSmall),
+              Text(item.title, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
@@ -131,17 +150,9 @@ class _ItemDetails extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   StatusChip(status: item.status),
-                  Chip(
-                    avatar: Icon(item.category.icon, size: 18),
-                    label: Text(item.category.label),
-                    visualDensity: VisualDensity.compact,
-                  ),
+                  Pill(item.category.label, icon: item.category.icon),
+                  Pill('${isOwner ? 'You posted' : 'Posted'} ${timeAgo(item.createdAt)}', tone: PillTone.muted),
                 ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${isOwner ? 'You posted this' : 'Posted'} ${timeAgo(item.createdAt)}',
-                style: textTheme.bodySmall,
               ),
               if (isOwner && item.status != ItemStatus.lost) ...[
                 const SizedBox(height: 16),
@@ -149,12 +160,12 @@ class _ItemDetails extends StatelessWidget {
               ] else if (item.handover case final h?) ...[
                 // Finder and admins: where the item was left (never the code for finders).
                 const SizedBox(height: 16),
-                Text('Finder\'s note', style: textTheme.titleSmall),
+                Text('Finder\'s note', style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 4),
                 Text(h.note, style: textTheme.bodyLarge),
               ],
               const SizedBox(height: 20),
-              Text('Description', style: textTheme.titleSmall),
+              Text('Description', style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
               const SizedBox(height: 4),
               Text(
                 description == null || description.isEmpty ? 'No description provided.' : description,

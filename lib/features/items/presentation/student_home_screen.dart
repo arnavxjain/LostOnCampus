@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,13 +7,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/router/routes.dart';
 import '../../../shared/models/app_notification.dart';
 import '../../../shared/utils/snackbar.dart';
+import '../../../shared/widgets/app_nav_bar.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../../notifications/providers/notifications_providers.dart';
 import '../providers/items_providers.dart';
 
-/// Student shell: bottom navigation between the feed, "My posts" and
-/// notifications, a shared "Post lost item" button, and a live ping when a new
-/// notification arrives.
+/// Student shell: glass navbar with Home, My posts and Alerts, a "+" button
+/// to post, and a live ping when a new notification arrives.
 class StudentHomeScreen extends ConsumerStatefulWidget {
   const StudentHomeScreen({super.key, required this.shell});
 
@@ -66,36 +67,35 @@ class _StudentHomeScreenState extends ConsumerState<StudentHomeScreen> {
     final unread = ref.watch(unreadNotificationsCountProvider);
 
     return Scaffold(
+      extendBody: true,
       body: shell,
-      floatingActionButton: shell.currentIndex == 2
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: () => context.push(Routes.postItem),
-              icon: const Icon(Icons.add),
-              label: const Text('Post lost item'),
-            ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: shell.currentIndex,
-        onDestinationSelected: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex),
-        destinations: [
-          const NavigationDestination(icon: Icon(Icons.search), label: 'Lost items'),
-          const NavigationDestination(
-            icon: Icon(Icons.inventory_2_outlined),
-            selectedIcon: Icon(Icons.inventory_2),
-            label: 'My posts',
+      bottomNavigationBar: AppNavBar(
+        currentIndex: shell.currentIndex,
+        onTap: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex),
+        onAction: () => context.push(Routes.postItem),
+        actionLabel: 'Post lost item',
+        items: [
+          const AppNavItem(
+            label: 'Home',
+            symbol: 'house',
+            selectedSymbol: 'house.fill',
+            icon: CupertinoIcons.house,
+            selectedIcon: CupertinoIcons.house_fill,
           ),
-          NavigationDestination(
-            icon: Badge(
-              isLabelVisible: unread > 0,
-              label: Text('$unread'),
-              child: const Icon(Icons.notifications_outlined),
-            ),
-            selectedIcon: Badge(
-              isLabelVisible: unread > 0,
-              label: Text('$unread'),
-              child: const Icon(Icons.notifications),
-            ),
-            label: 'Notifications',
+          const AppNavItem(
+            label: 'My posts',
+            symbol: 'square.grid.2x2',
+            selectedSymbol: 'square.grid.2x2.fill',
+            icon: CupertinoIcons.square_grid_2x2,
+            selectedIcon: CupertinoIcons.square_grid_2x2_fill,
+          ),
+          AppNavItem(
+            label: 'Alerts',
+            symbol: 'bell',
+            selectedSymbol: 'bell.fill',
+            icon: CupertinoIcons.bell,
+            selectedIcon: CupertinoIcons.bell_fill,
+            badge: unread,
           ),
         ],
       ),

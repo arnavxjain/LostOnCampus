@@ -1,9 +1,10 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 
 /// Mirrors the `notification_type` enum in the database.
 enum NotificationType {
-  itemFound(Icons.verified_user),
-  itemCollected(Icons.check_circle);
+  itemFound(CupertinoIcons.checkmark_shield_fill),
+  itemCollected(CupertinoIcons.checkmark_circle_fill);
 
   const NotificationType(this.icon);
 

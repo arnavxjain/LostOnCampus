@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/utils/resend_cooldown.dart';
 import '../../../shared/utils/snackbar.dart';
+import '../../../shared/widgets/app_header.dart';
 import '../../../shared/widgets/loading_button.dart';
 import '../../../shared/widgets/otp_code_field.dart';
 import '../data/auth_repository.dart';
@@ -88,7 +90,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> with Rese
     final busy = _verifying || _resending;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Verify email')),
+      appBar: const AppHeader(title: 'Verify email', showAvatar: false),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -102,11 +104,12 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> with Rese
               const SizedBox(height: 24),
               OtpCodeField(controller: _code, onSubmitted: (_) => _verify()),
               const SizedBox(height: 24),
-              LoadingButton(label: 'Verify', loading: _verifying, onPressed: _verify),
+              LoadingButton(label: 'Verify', icon: CupertinoIcons.checkmark_seal, loading: _verifying, onPressed: _verify),
               const SizedBox(height: 12),
-              TextButton(
+              TextButton.icon(
                 onPressed: busy || !canResend ? null : _resend,
-                child: Text(resendLabel),
+                icon: const Icon(CupertinoIcons.arrow_clockwise, size: 18),
+                label: Text(resendLabel),
               ),
             ],
           ),

@@ -11,7 +11,10 @@ class Routes {
   static const postItem = '/post';
   static const itemDetailPattern = '/items/:id';
   static String itemDetail(String id) => '/items/$id';
+  static const profile = '/profile';
   static const admin = '/admin';
+  static const adminVerify = '/admin/verify';
+  static const adminProfile = '/admin/profile';
 
   /// Reachable while signed out.
   static const publicRoutes = {login, register, verifyEmail};

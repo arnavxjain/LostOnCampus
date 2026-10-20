@@ -50,6 +50,8 @@ void main() {
       expect(redirect(Routes.home), isNull);
       expect(redirect(Routes.myPosts), isNull);
       expect(redirect(Routes.notifications), isNull);
+      expect(redirect(Routes.profile), isNull);
+      expect(redirect(Routes.adminVerify), Routes.home);
       expect(redirect(Routes.postItem), isNull);
       expect(redirect(Routes.itemDetail('x')), isNull);
     });
@@ -63,6 +65,9 @@ void main() {
       expect(redirect(Routes.itemDetail('x'), role: admin), isNull);
       expect(redirect(Routes.postItem, role: admin), Routes.admin);
       expect(redirect(Routes.notifications, role: admin), Routes.admin);
+      expect(redirect(Routes.profile, role: admin), Routes.admin);
+      expect(redirect(Routes.adminVerify, role: admin), isNull);
+      expect(redirect(Routes.adminProfile, role: admin), isNull);
     });
   });
 }

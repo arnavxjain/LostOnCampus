@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,7 @@ import '../../../shared/widgets/loading_button.dart';
 import '../../items/presentation/widgets/handover_info.dart';
 import '../../items/presentation/widgets/item_image.dart';
 import '../../items/providers/items_providers.dart';
+import '../../../core/theme/shapes.dart';
 
 /// Admin confirms the owner's code matches this item and hands it over.
 /// Returns true once the handover is marked complete.
@@ -71,8 +73,8 @@ class _TraceCompleteSheetState extends ConsumerState<_TraceCompleteSheet> {
           shrinkWrap: true,
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+            Squircle(
+              radius: 24,
               child: AspectRatio(aspectRatio: 16 / 10, child: ItemImage(item: item, iconSize: 56)),
             ),
             const SizedBox(height: 16),
@@ -99,7 +101,7 @@ class _TraceCompleteSheetState extends ConsumerState<_TraceCompleteSheet> {
               decoration: InputDecoration(
                 labelText: 'Code given by the owner',
                 errorText: typed && !_matches ? "Doesn't match this item. Don't hand it over." : null,
-                suffixIcon: _matches ? Icon(Icons.check_circle, color: theme.colorScheme.primary) : null,
+                suffixIcon: _matches ? Icon(CupertinoIcons.checkmark_circle_fill, color: theme.colorScheme.primary) : null,
               ),
             ),
             const SizedBox(height: 8),
@@ -107,6 +109,7 @@ class _TraceCompleteSheetState extends ConsumerState<_TraceCompleteSheet> {
             const SizedBox(height: 16),
             LoadingButton(
               label: 'Trace complete: item handed over',
+              icon: CupertinoIcons.checkmark_seal_fill,
               loading: _saving,
               onPressed: _matches ? _complete : null,
             ),

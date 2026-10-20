@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 
 import '../../../../shared/models/item.dart';
+import '../../../../core/theme/shapes.dart';
 
 /// Owner-facing summary of where their item is and the pickup code.
 /// Renders nothing while the item is still lost.
@@ -18,7 +20,7 @@ class HandoverInfo extends StatelessWidget {
     return switch (item.status) {
       ItemStatus.lost => const SizedBox.shrink(),
       ItemStatus.atSecurity => _Banner(
-          icon: Icons.verified_user,
+          icon: CupertinoIcons.checkmark_shield_fill,
           text: 'Found! It was handed to security.',
           detail: note.isEmpty ? null : 'Finder\'s note: $note',
           footer: Column(
@@ -39,7 +41,7 @@ class HandoverInfo extends StatelessWidget {
             ],
           ),
         ),
-      ItemStatus.returned => const _Banner(icon: Icons.check_circle, text: 'Collected. Glad you got it back!'),
+      ItemStatus.returned => const _Banner(icon: CupertinoIcons.checkmark_circle_fill, text: 'Collected. Glad you got it back!'),
     };
   }
 }
@@ -60,8 +62,8 @@ class _Banner extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final color = scheme.onSecondaryContainer;
     return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: scheme.secondaryContainer, borderRadius: BorderRadius.circular(12)),
+      padding: const EdgeInsets.all(14),
+      decoration: AppShapes.decoration(color: scheme.secondaryContainer, r: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

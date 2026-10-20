@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
+import '../../../shared/models/profile.dart';
 import '../../../shared/models/user_role.dart';
 import '../data/auth_repository.dart';
 
@@ -47,4 +48,26 @@ final userRoleProvider = FutureProvider<UserRole?>((ref) async {
     debugPrint('Failed to load role: $e');
     rethrow;
   }
+});
+
+/// The signed-in user's profile (name, phone, role) plus their email.
+final currentProfileProvider = FutureProvider<Profile?>((ref) async {
+  final user = ref.watch(currentUserProvider);
+  final userId = ref.watch(currentUserIdProvider);
+  if (user == null || userId == null) return null;
+
+  final rows = await ref
+      .watch(supabaseClientProvider)
+      .from('profiles')
+      .select('full_name, phone, role')
+      .eq('id', userId)
+      .limit(1);
+  final row = rows.isEmpty ? null : rows.first;
+  return Profile(
+    id: userId,
+    fullName: row?['full_name'] as String? ?? '',
+    phone: row?['phone'] as String?,
+    role: UserRole.fromString(row?['role'] as String?),
+    email: user.email,
+  );
 });

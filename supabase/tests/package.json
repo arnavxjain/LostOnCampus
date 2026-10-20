@@ -1,0 +1,12 @@
+{
+  "name": "lostoncampus-db-tests",
+  "private": true,
+  "type": "module",
+  "description": "Runs the Supabase migrations in an in-memory Postgres and checks RLS and the OTP flow.",
+  "scripts": {
+    "test": "node rls.test.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.10"
+  }
+}

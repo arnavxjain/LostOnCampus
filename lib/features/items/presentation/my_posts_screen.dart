@@ -1,14 +1,14 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/routes.dart';
-import '../../../shared/models/item.dart';
+import '../../../shared/widgets/app_header.dart';
 import '../../../shared/widgets/async_view.dart';
-import '../../../shared/widgets/sign_out_button.dart';
 import '../providers/items_providers.dart';
-import 'widgets/handover_info.dart';
-import 'widgets/item_card.dart';
+import 'widgets/item_grid.dart';
+import 'widgets/owner_pills.dart';
 
 class MyPostsScreen extends ConsumerWidget {
   const MyPostsScreen({super.key});
@@ -18,7 +18,7 @@ class MyPostsScreen extends ConsumerWidget {
     final items = ref.watch(myItemsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My posts'), actions: const [SignOutButton()]),
+      appBar: const AppHeader(title: 'My posts'),
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(myItemsProvider.future),
         child: AsyncView(
@@ -29,21 +29,16 @@ class MyPostsScreen extends ConsumerWidget {
                   children: const [
                     SizedBox(height: 80),
                     MessageView(
-                      icon: Icons.inventory_2_outlined,
+                      icon: CupertinoIcons.tray,
                       title: "You haven't posted anything",
-                      subtitle: "Lost something? Post it and we'll let you know when it's found.",
+                      subtitle: "Lost something? Tap + and we'll let you know when it's found.",
                     ),
                   ],
                 )
-              : ListView.builder(
-                  padding: const EdgeInsets.only(top: 8, bottom: 96),
-                  itemCount: list.length,
-                  itemBuilder: (context, i) => ItemCard(
-                    item: list[i],
-                    showStatus: true,
-                    footer: list[i].status == ItemStatus.lost ? null : HandoverInfo(item: list[i]),
-                    onTap: () => context.push(Routes.itemDetail(list[i].id)),
-                  ),
+              : ItemGrid(
+                  items: list,
+                  pillsFor: ownerPills,
+                  onTap: (item) => context.push(Routes.itemDetail(item.id)),
                 ),
         ),
       ),

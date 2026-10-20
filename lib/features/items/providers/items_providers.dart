@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/supabase/supabase_providers.dart';
+import '../../auth/providers/auth_providers.dart';
 import '../../../shared/models/item.dart';
 import '../data/items_repository.dart';
 
@@ -17,7 +18,11 @@ class FeedFilter {
 
 class FeedFilterNotifier extends Notifier<FeedFilter> {
   @override
-  FeedFilter build() => const FeedFilter();
+  FeedFilter build() {
+    // Start fresh for each signed-in user.
+    ref.watch(currentUserIdProvider);
+    return const FeedFilter();
+  }
 
   void setQuery(String query) => state = FeedFilter(query: query, category: state.category);
 

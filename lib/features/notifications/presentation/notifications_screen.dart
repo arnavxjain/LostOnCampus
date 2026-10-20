@@ -1,14 +1,17 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/routes.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../shared/models/app_notification.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/snackbar.dart';
 import '../../../shared/utils/time_ago.dart';
+import '../../../shared/widgets/app_header.dart';
 import '../../../shared/widgets/async_view.dart';
-import '../../../shared/widgets/sign_out_button.dart';
+import '../../../shared/widgets/pill.dart';
 import '../providers/notifications_providers.dart';
 
 class NotificationsScreen extends ConsumerWidget {
@@ -18,14 +21,17 @@ class NotificationsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notifications = ref.watch(notificationsProvider);
     final unread = ref.watch(unreadNotificationsCountProvider);
+    final bottom = MediaQuery.paddingOf(context).bottom + 24;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifications'),
+      appBar: AppHeader(
+        title: 'Alerts',
         actions: [
-          if (unread > 0)
-            TextButton(onPressed: () => _markAllRead(context, ref), child: const Text('Mark all read')),
-          const SignOutButton(),
+          if (unread > 0) TextButton.icon(
+              onPressed: () => _markAllRead(context, ref),
+              icon: const Icon(CupertinoIcons.checkmark_alt, size: 18),
+              label: const Text('Mark all read'),
+            ),
         ],
       ),
       body: RefreshIndicator(
@@ -38,17 +44,17 @@ class NotificationsScreen extends ConsumerWidget {
                   children: const [
                     SizedBox(height: 80),
                     MessageView(
-                      icon: Icons.notifications_none,
-                      title: 'No notifications yet',
+                      icon: CupertinoIcons.bell,
+                      title: 'No alerts yet',
                       subtitle: "We'll let you know here when one of your items is found or collected.",
                     ),
                   ],
                 )
               : ListView.separated(
-                  padding: const EdgeInsets.only(bottom: 96),
+                  padding: EdgeInsets.fromLTRB(20, 16, 20, bottom),
                   itemCount: list.length,
-                  separatorBuilder: (_, _) => const Divider(height: 1),
-                  itemBuilder: (context, i) => _NotificationTile(
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
+                  itemBuilder: (context, i) => _NotificationCard(
                     notification: list[i],
                     onTap: () => _open(context, ref, list[i]),
                   ),
@@ -80,47 +86,60 @@ class NotificationsScreen extends ConsumerWidget {
   }
 }
 
-class _NotificationTile extends StatelessWidget {
-  const _NotificationTile({required this.notification, required this.onTap});
+class _NotificationCard extends StatelessWidget {
+  const _NotificationCard({required this.notification, required this.onTap});
 
   final AppNotification notification;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final unread = notification.isUnread;
 
-    return ListTile(
-      onTap: onTap,
-      tileColor: unread ? theme.colorScheme.primaryContainer.withValues(alpha: 0.35) : null,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: CircleAvatar(
-        backgroundColor: theme.colorScheme.secondaryContainer,
-        child: Icon(notification.type.icon, color: theme.colorScheme.onSecondaryContainer),
-      ),
-      title: Text(
-        notification.title,
-        style: theme.textTheme.titleSmall?.copyWith(fontWeight: unread ? FontWeight.w700 : FontWeight.w500),
-      ),
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(notification.body),
-            const SizedBox(height: 4),
-            Text(timeAgo(notification.createdAt), style: theme.textTheme.bodySmall),
-          ],
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      color: unread ? AppColors.teal13 : null,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(color: AppColors.teal13, shape: BoxShape.circle),
+                child: Icon(notification.type.icon, color: AppColors.teal, size: 22),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      notification.title,
+                      style: textTheme.titleSmall?.copyWith(fontWeight: unread ? FontWeight.w700 : FontWeight.w600),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(notification.body, style: textTheme.bodyMedium),
+                    const SizedBox(height: 8),
+                    Pill(timeAgo(notification.createdAt)),
+                  ],
+                ),
+              ),
+              if (unread)
+                Container(
+                  margin: const EdgeInsets.only(left: 8, top: 4),
+                  width: 10,
+                  height: 10,
+                  decoration: const BoxDecoration(color: AppColors.accent, shape: BoxShape.circle),
+                ),
+            ],
+          ),
         ),
       ),
-      trailing: unread
-          ? Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle),
-            )
-          : null,
     );
   }
 }

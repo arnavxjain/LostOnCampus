@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,9 +18,13 @@ class AsyncView<T> extends StatelessWidget {
       data: data,
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => MessageView(
-        icon: Icons.cloud_off,
+        icon: CupertinoIcons.wifi_slash,
         title: friendlyError(error),
-        action: FilledButton.tonal(onPressed: onRetry, child: const Text('Retry')),
+        action: FilledButton.tonalIcon(
+          onPressed: onRetry,
+          icon: const Icon(CupertinoIcons.arrow_clockwise, size: 18),
+          label: const Text('Retry'),
+        ),
       ),
     );
   }

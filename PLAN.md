@@ -57,8 +57,8 @@
 - Live ping comes from new notification rows (Realtime), so nothing is missed while the app was closed.
 - Optional, not built: push notifications when the app is closed (needs Firebase + APNs).
 
-## 8. Polish & Testing
+## 8. Polish & Testing ✅
 - Form validation, empty states, error snackbars.
-- Unit tests for OTP flow and role access.
-- Manual test checklist covering the full owner → finder → admin → owner flow.
+- Unit tests for OTP flow and role access (Flutter: `test/`; database: `supabase/tests`).
+- Manual test checklist covering the full owner → finder → admin → owner flow (`docs/TESTING.md`).
 - README: setup, env variables, SQL migrations, email template, how to make an admin account.

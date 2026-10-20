@@ -49,3 +49,6 @@ app.*.map.json
 
 # Local Claude Code settings
 .claude/settings.local.json
+
+# Database test dependencies
+supabase/tests/node_modules/

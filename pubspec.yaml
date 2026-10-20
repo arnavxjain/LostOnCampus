@@ -39,6 +39,13 @@ dependencies:
   go_router: ^18.1.0
   flutter_dotenv: ^6.0.1
   image_picker: ^1.2.4
+  http: ^1.6.0
+  # Local copy of native_glass_navbar 1.2.0 with a selection-sync patch
+  # (see packages/native_glass_navbar/PATCHES.md).
+  native_glass_navbar:
+    path: packages/native_glass_navbar
+  google_fonts: ^8.2.1
+  figma_squircle: ^0.6.3
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/router/routes.dart';
 import '../../../shared/utils/snackbar.dart';
 import '../../../shared/utils/validators.dart';
+import '../../../shared/widgets/app_header.dart';
 import '../../../shared/widgets/loading_button.dart';
 import '../data/auth_repository.dart';
 import '../providers/auth_providers.dart';
@@ -62,7 +64,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create account')),
+      appBar: const AppHeader(title: 'Create account', showAvatar: false),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -110,7 +112,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     labelText: 'Password',
                     helperText: 'At least ${Validators.minPasswordLength} characters',
                     suffixIcon: IconButton(
-                      icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(_obscure ? CupertinoIcons.eye : CupertinoIcons.eye_slash),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
@@ -126,7 +128,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   onFieldSubmitted: (_) => _register(),
                 ),
                 const SizedBox(height: 24),
-                LoadingButton(label: 'Create account', loading: _loading, onPressed: _register),
+                LoadingButton(label: 'Create account', icon: CupertinoIcons.person_badge_plus, loading: _loading, onPressed: _register),
               ],
             ),
           ),
